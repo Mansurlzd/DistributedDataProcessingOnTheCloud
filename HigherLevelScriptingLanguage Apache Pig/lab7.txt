@@ -1,0 +1,43 @@
+A = LOAD '/user/ma/mansur_alizada/input/Unclaimed_bank_accounts.csv' USING PigStorage(',') AS 
+(last_name : chararray,first_name :chararray ,balance : double ,address :chararray,city :chararray ,last_transaction :chararray ,bank_name :chararray);
+DESCRIBE A;
+grouped_data = GROUP A BY bank_name;
+DESCRIBE grouped_data;
+C= FOREACH grouped_data GENERATE group,SUM(A.balance);
+STORE C INTO '/user/ma/mansur_alizada/processed_bank_accounts' USING PigStorage (',');
+/////second task 
+A = LOAD '/user/ma/mansur_alizada/input/Unclaimed_bank_accounts.csv' USING PigStorage(',') AS 
+(last_name : chararray,first_name :chararray ,balance : double ,address :chararray,city :chararray ,last_transaction :chararray ,bank_name :chararray);
+DESCRIBE A;
+filtered= Filter A by SUBSTRING(last_transaction,6,10)=='1983';
+B = GROUP filtered BY (city,bank_name);
+C = foreach B {
+    FIRST_RESULT =  ORDER filtered BY balance DESC;
+    SECOND_RESULT  =  ORDER filtered BY  balance ASC;
+    descsec= LIMIT FIRST_RESULT 3;
+    ascsec=LIMIT SECOND_RESULT 3;
+    GENERATE group, descsec, ascsec;
+}
+STORE C INTO '/user/ma/mansur_alizada/new62_processed_bank_accounts' USING PigStorage (',');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
